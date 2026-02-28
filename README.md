@@ -1,6 +1,6 @@
 # HOSTELLA – Smart Digital Outpass Management System
 
-A Smart Digital Outpass Management System designed to automate hostel exit–entry permissions using QR Code, OTP verification, and real-time tracking.
+A Smart Digital Outpass Management System designed to automate hostel exit–entry permissions using QR Code, OTP verification, and real-time tracking. 
 
 ---
 
