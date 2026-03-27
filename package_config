@@ -18,3 +18,10 @@
       "rootUri": "file:///C:/Users/91986/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "3.1"
+  },
+    {
+      "name": "characters",
+      "rootUri": "file:///C:/Users/91986/AppData/Local/Pub/Cache/hosted/pub.dev/characters-1.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
