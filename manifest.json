@@ -1,6 +1,6 @@
 {
-    "name": "hostella_student",
-    "short_name": "hostella_student",
+    "name": "hostel_outpass",
+    "short_name": "hostel_outpass",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
