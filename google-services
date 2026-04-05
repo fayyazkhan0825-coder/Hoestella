@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1028389526578",
+    "project_id": "hoestella-c3e71",
+    "storage_bucket": "hoestella-c3e71.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028389526578:android:6f0b8dd187020b3d25302b",
+        "android_client_info": {
+          "package_name": "com.example.hostel_outpass"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1028389526578-2ldknvnokns3u34443hp79e6i54vum2c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC69ZxhBEtE2Piyz7bp4jLuId7VJgo2-1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1028389526578-2ldknvnokns3u34443hp79e6i54vum2c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
