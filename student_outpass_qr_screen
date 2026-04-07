@@ -1,0 +1,209 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
+import '../../models/outpass_request.dart';
+
+class StudentOutpassQrScreen extends StatelessWidget {
+  final OutpassRequest request;
+
+  const StudentOutpassQrScreen({
+    super.key,
+    required this.request,
+  });
+
+  String _buildPayload() {
+    final jsonMap = <String, dynamic>{
+      'v': 1,
+      'type': 'hostel_outpass',
+      'requestId': request.id,
+      'studentId': request.studentId,
+      'studentName': request.studentName,
+      'roomNumber': request.roomNumber,
+      'exitDate': request.exitDateTime.toIso8601String(),
+      'returnDate': request.returnDateTime.toIso8601String(),
+    };
+
+    return 'HOSTEL_OUTPASS:${base64Url.encode(utf8.encode(jsonEncode(jsonMap)))}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formatter = DateFormat('MMM d, yyyy • h:mm a');
+    final payload = _buildPayload();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Outpass QR'),
+      ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
+                  Colors.transparent,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Icon(
+                                Icons.qr_code_rounded,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    request.studentName,
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Room ${request.roomNumber} • Approved outpass',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(color: Colors.black54),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: const Color(0xFFE7E7EE),
+                                ),
+                              ),
+                              child: QrImageView(
+                                data: payload,
+                                version: QrVersions.auto,
+                                size: 260,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Show this QR to the guard at the gate.',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.black54),
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                _InfoPill(
+                                  icon: Icons.logout,
+                                  label: formatter.format(request.exitDateTime),
+                                ),
+                                _InfoPill(
+                                  icon: Icons.login,
+                                  label: formatter.format(request.returnDateTime),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: payload));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('QR payload copied')),
+                        );
+                      },
+                      icon: const Icon(Icons.copy),
+                      label: const Text('Copy payload (testing)'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _InfoPill({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
