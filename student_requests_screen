@@ -1,0 +1,203 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/app_user.dart';
+import '../../models/outpass_request.dart';
+import '../../services/outpass_service.dart';
+import 'student_outpass_qr_screen.dart';
+
+class StudentRequestsScreen extends StatelessWidget {
+  const StudentRequestsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<AppUser?>(context);
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('User not loaded. Please log in again.'),
+        ),
+      );
+    }
+
+    final formatter = DateFormat('MMM d, yyyy • h:mm a');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Outpass Requests'),
+      ),
+      body: StreamBuilder<List<OutpassRequest>>(
+        stream: context.read<OutpassService>().streamStudentRequests(user.id),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.orange),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          final requests = snapshot.data ?? [];
+
+          if (requests.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.inbox_outlined,
+                      size: 56,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.45),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'No outpass requests yet',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Create your first outpass request from the dashboard.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: requests.length,
+            itemBuilder: (context, index) {
+              final request = requests[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              request.reason,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          _StatusChip(status: request.status),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Exit: ${formatter.format(request.exitDateTime)}',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      Text(
+                        'Return: ${formatter.format(request.returnDateTime)}',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Parent: ${request.parentPhone}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      if (request.wardenRemarks != null &&
+                          request.wardenRemarks!.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          'Remarks: ${request.wardenRemarks}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                      if (request.status == OutpassStatus.approved) ...[
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      StudentOutpassQrScreen(request: request),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.qr_code),
+                            label: const Text('Show QR'),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final OutpassStatus status;
+
+  const _StatusChip({required this.status});
+
+  Color get _color {
+    switch (status) {
+      case OutpassStatus.pending:
+        return const Color(0xFFFF8A00);
+      case OutpassStatus.approved:
+        return const Color(0xFF16A34A);
+      case OutpassStatus.rejected:
+        return const Color(0xFFDC2626);
+    }
+  }
+
+  String get _label {
+    switch (status) {
+      case OutpassStatus.pending:
+        return 'Pending';
+      case OutpassStatus.approved:
+        return 'Approved';
+      case OutpassStatus.rejected:
+        return 'Rejected';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      label: Text(
+        _label,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+      ),
+      backgroundColor: _color,
+    );
+  }
+}
+
