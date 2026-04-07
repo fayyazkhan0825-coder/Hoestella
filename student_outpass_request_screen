@@ -1,0 +1,449 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../models/app_user.dart';
+import '../../models/outpass_request.dart';
+import '../../services/outpass_service.dart';
+
+class StudentOutpassRequestScreen extends StatefulWidget {
+  const StudentOutpassRequestScreen({super.key});
+
+  @override
+  State<StudentOutpassRequestScreen> createState() =>
+      _StudentOutpassRequestScreenState();
+}
+
+class _StudentOutpassRequestScreenState
+    extends State<StudentOutpassRequestScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _reasonController = TextEditingController();
+  final _parentPhoneController = TextEditingController();
+  final _otpController = TextEditingController();
+
+  DateTime? _exitDateTime;
+  DateTime? _returnDateTime;
+  bool _isSubmitting = false;
+  bool _isOtpSent = false;
+  String _verificationId = '';
+
+  @override
+  void dispose() {
+    _reasonController.dispose();
+    _parentPhoneController.dispose();
+    _otpController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDateTime({
+    required bool isExit,
+  }) async {
+    if (_isOtpSent) return; // Disable picker after OTP is sent
+    
+    final now = DateTime.now();
+    final initialDate = now;
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 1),
+    );
+
+    if (pickedDate == null) return;
+    if (!mounted) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(now),
+    );
+
+    if (pickedTime == null) return;
+    if (!mounted) return;
+
+    final combined = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+
+    setState(() {
+      if (isExit) {
+        _exitDateTime = combined;
+      } else {
+        _returnDateTime = combined;
+      }
+    });
+  }
+
+  String _formatDateTime(DateTime? value) {
+    if (value == null) return 'Select date & time';
+    return '${value.day.toString().padLeft(2, '0')}/'
+        '${value.month.toString().padLeft(2, '0')}/'
+        '${value.year} '
+        '${value.hour.toString().padLeft(2, '0')}:'
+        '${value.minute.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _sendOtp() async {
+    final user = Provider.of<AppUser?>(context, listen: false);
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not loaded. Please try again.')),
+      );
+      return;
+    }
+
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_exitDateTime == null || _returnDateTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select both exit and return date & time')),
+      );
+      return;
+    }
+
+    if (_returnDateTime!.isBefore(_exitDateTime!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Return time must be after exit time')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      String phone = _parentPhoneController.text.trim();
+      if (!phone.startsWith('+')) {
+        phone = '+91$phone'; // Defaulting to India country code
+      }
+
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          if (mounted) {
+             setState(() {
+               _otpController.text = credential.smsCode ?? '';
+             });
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (!mounted) return;
+          setState(() { _isSubmitting = false; });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Verification Failed: ${e.message}')),
+          );
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (!mounted) return;
+          setState(() {
+            _isSubmitting = false;
+            _verificationId = verificationId;
+            _isOtpSent = true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Real OTP sent successfully to parent!')),
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (!mounted) return;
+          _verificationId = verificationId;
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() { _isSubmitting = false; });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+  Future<void> _verifyOtpAndSubmit() async {
+    if (_otpController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter OTP')),
+      );
+      return;
+    }
+
+    setState(() { _isSubmitting = true; });
+
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: _otpController.text.trim(),
+      );
+
+      // Verify without signing out the current user by attempting to link.
+      // If the parent number is linked to a sibling account, it safely throws 'credential-already-in-use', 
+      // but only if the actual OTP was correct! 
+      try {
+        await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'credential-already-in-use' && e.code != 'provider-already-linked') {
+          rethrow;
+        }
+      }
+
+      final user = Provider.of<AppUser?>(context, listen: false)!;
+      final outpass = OutpassRequest(
+        id: '',
+        studentId: user.id,
+        studentName: user.name,
+        roomNumber: user.roomNumber ?? '',
+        reason: _reasonController.text.trim(),
+        exitDateTime: _exitDateTime!,
+        returnDateTime: _returnDateTime!,
+        parentPhone: _parentPhoneController.text.trim(),
+        status: OutpassStatus.pending,
+        createdAt: DateTime.now(),
+      );
+
+      await context.read<OutpassService>().createRequest(outpass);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Outpass request submitted successfully')),
+      );
+      Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid OTP: ${e.message}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting request: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() { _isSubmitting = false; });
+      }
+    }
+  }
+
+  Future<void> _submitWithoutVerification() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_exitDateTime == null || _returnDateTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select both exit and return date & time')),
+      );
+      return;
+    }
+
+    if (_returnDateTime!.isBefore(_exitDateTime!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Return time must be after exit time')),
+      );
+      return;
+    }
+
+    setState(() { _isSubmitting = true; });
+
+    try {
+      final user = Provider.of<AppUser?>(context, listen: false)!;
+      final outpass = OutpassRequest(
+        id: '',
+        studentId: user.id,
+        studentName: user.name,
+        roomNumber: user.roomNumber ?? '',
+        reason: _reasonController.text.trim(),
+        exitDateTime: _exitDateTime!,
+        returnDateTime: _returnDateTime!,
+        parentPhone: _parentPhoneController.text.trim(),
+        status: OutpassStatus.pending,
+        createdAt: DateTime.now(),
+      );
+
+      await context.read<OutpassService>().createRequest(outpass);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Outpass request submitted successfully (Web - without phone verification)'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting request: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() { _isSubmitting = false; });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<AppUser?>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Apply for Outpass'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (user != null) ...[
+                Text(
+                  user.name,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Room: ${user.roomNumber ?? 'Not set'}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.black54),
+                ),
+                const SizedBox(height: 16),
+              ],
+              TextFormField(
+                controller: _reasonController,
+                enabled: !_isOtpSent,
+                decoration: const InputDecoration(
+                  labelText: 'Reason for Outpass',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a reason';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _parentPhoneController,
+                enabled: !_isOtpSent && !kIsWeb,
+                decoration: InputDecoration(
+                  labelText: kIsWeb
+                      ? 'Parent / Guardian Phone (Web - no verification)'
+                      : 'Parent / Guardian Phone',
+                  border: const OutlineInputBorder(),
+                  prefixText: _isOtpSent ? '' : '+91 ',
+                  filled: kIsWeb,
+                  fillColor: Colors.grey[100],
+                ),
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter parent / guardian phone';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: ListTile(
+                  title: const Text('Exit Date & Time'),
+                  subtitle: Text(_formatDateTime(_exitDateTime)),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () => _pickDateTime(isExit: true),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Card(
+                child: ListTile(
+                  title: const Text('Return Date & Time'),
+                  subtitle: Text(_formatDateTime(_returnDateTime)),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () => _pickDateTime(isExit: false),
+                ),
+              ),
+              if (_isOtpSent) ...[
+                const SizedBox(height: 24),
+                Text(
+                  'OTP Verification',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _otpController,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter OTP sent to parent',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _isOtpSent = false;
+                        _otpController.clear();
+                      });
+                    },
+                    child: const Text('Change Phone Number'),
+                  ),
+                )
+              ],
+              const SizedBox(height: 24),
+              if (kIsWeb) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    border: Border.all(color: Colors.orange),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning, color: Colors.orange),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Phone verification is not available on web. Outpass will be submitted without parent verification.',
+                          style: TextStyle(color: Colors.orange[800]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _isSubmitting
+                      ? null
+                      : (!kIsWeb)
+                          ? (_isOtpSent ? _verifyOtpAndSubmit : _sendOtp)
+                          : _submitWithoutVerification,
+                  child: _isSubmitting
+                      ? const CircularProgressIndicator.adaptive()
+                      : Text(
+                          (!kIsWeb)
+                              ? (_isOtpSent ? 'Verify & Submit Outpass Request' : 'Send OTP to Parent')
+                              : 'Submit Outpass Request (Web)',
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
