@@ -9,6 +9,6 @@ class ComplaintsScreen extends StatelessWidget {
       body: Center(
         child: Text("Complaints Screen"),
       ),
-    );
+    )
   
 }
