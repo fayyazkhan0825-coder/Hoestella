@@ -5,7 +5,7 @@ class Announcement {
   final String title;
   final String body;
   final DateTime createdAt;    
-  final String createdById; 
+  final String createdById;  
   
   Announcement({ 
     required this.id,  
