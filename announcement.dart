@@ -8,7 +8,7 @@ class Announcement {
   final String createdById;  
   
   Announcement({ 
-    required this.id,  
+    required this.id,   
     required this.title,  
     required this.body,  
     required this.createdAt,
