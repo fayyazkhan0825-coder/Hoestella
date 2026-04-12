@@ -16,7 +16,7 @@ class Announcement {
   });
 
   factory Announcement.fromMap(String id, Map<String, dynamic> data) {
-    return Announcement(
+    return Announcement( 
       id: id,
       title: data['title'] as String? ?? '',
       body: data['body'] as String? ?? '',
