@@ -12,7 +12,7 @@ class Announcement {
     required this.title, 
     required this.body,
     required this.createdAt,
-    required this.createdById,
+    required this.createdById, 
   }); 
 
   factory Announcement.fromMap(String id, Map<String, dynamic> data) {
