@@ -11,7 +11,7 @@ class Announcement {
     required this.id,   
     required this.title,  
     required this.body,  
-    required this.createdAt,
+    required this.createdAt, 
     required this.createdById,  
   }); 
   
