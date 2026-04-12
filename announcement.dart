@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Announcement {
   final String id;  
   final String title;
-  final String body;
+  final String body; 
   final DateTime createdAt;    
   final String createdById;  
   
