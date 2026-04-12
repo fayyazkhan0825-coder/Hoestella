@@ -13,7 +13,7 @@ class Announcement {
     required this.body,
     required this.createdAt,
     required this.createdById,
-  });
+  }); 
 
   factory Announcement.fromMap(String id, Map<String, dynamic> data) {
     return Announcement( 
