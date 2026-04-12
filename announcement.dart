@@ -18,7 +18,7 @@ class Announcement {
   factory Announcement.fromMap(String id, Map<String, dynamic> data) {
     return Announcement( 
       id: id,
-      title: data['title'] as String? ?? '',
+      title: data['title'] as String? ?? '', 
       body: data['body'] as String? ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       createdById: data['createdById'] as String? ?? '',
