@@ -4,7 +4,7 @@
 # sending it via email.
 #
 # The hook should exit with non-zero status after issuing an appropriate
-# message if it wants to prevent the email(s) from being sent.
+# message if it wants to prevent the email(s) from being sent. 
 #
 # To enable this hook, rename this file to "sendemail-validate".
 # 
