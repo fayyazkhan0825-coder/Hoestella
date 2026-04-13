@@ -7,7 +7,7 @@
 # message if it wants to prevent the email(s) from being sent.
 #
 # To enable this hook, rename this file to "sendemail-validate".
-#
+# 
 # By default, it will only check that the patch(es) can be applied on top of
 # the default upstream branch without conflicts in a secondary worktree. After
 # validation (successful or not) of the last patch of a series, the worktree
