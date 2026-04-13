@@ -1,6 +1,6 @@
 ={
   "configVersion": 2,
-  "packages": [
+  "packages": [ 
     {
       "name": "_flutterfire_internals",
       "rootUri": "file:///C:/Users/91986/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.3.67",
