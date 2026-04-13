@@ -6,7 +6,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-android {
+android { 
     namespace = "com.example.hostel_outpass"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
