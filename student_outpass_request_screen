@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../models/app_user.dart';
 import '../../models/outpass_request.dart';
-import '../../services/outpass_service.dart'; 
+import '../../services/outpass_service.dart';  
 
 class StudentOutpassRequestScreen extends StatefulWidget {
   const StudentOutpassRequestScreen({super.key});
