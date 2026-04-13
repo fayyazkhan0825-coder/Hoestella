@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/announcement.dart';
 
-class AnnouncementService {
+class AnnouncementService { 
   final CollectionReference<Map<String, dynamic>> _annRef =
       FirebaseFirestore.instance.collection('announcements');
 
