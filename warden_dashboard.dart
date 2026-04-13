@@ -9,7 +9,7 @@ import '../../services/outpass_service.dart';
 class WardenDashboard extends StatelessWidget {
   const WardenDashboard({super.key});
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
