@@ -7,7 +7,7 @@ import '../student/student_outpass_request_screen.dart';
 import '../student/student_requests_screen.dart';
 
 class StudentDashboard extends StatelessWidget {
-  const StudentDashboard({super.key});
+  const StudentDashboard({super.key}); 
 
   @override
   Widget build(BuildContext context) {
