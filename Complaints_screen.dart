@@ -10,5 +10,4 @@ class ComplaintsScreen extends StatelessWidget {
         child: Text("Complaints Screen"),
       ),
     )
-  
     }
