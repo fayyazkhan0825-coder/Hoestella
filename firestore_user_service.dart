@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/app_user.dart';
 
-class FirestoreUserService {
+class FirestoreUserService { 
   final CollectionReference<Map<String, dynamic>> _usersRef =
       FirebaseFirestore.instance.collection('users');
 
