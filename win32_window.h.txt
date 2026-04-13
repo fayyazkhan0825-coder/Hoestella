@@ -4,7 +4,7 @@
 #include <windows.h>
 
 #include <functional>
-#include <memory>
+#include <memory> 
 #include <string>
 
 // A class abstraction for a high DPI-aware Win32 Window. Intended to be
