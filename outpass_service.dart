@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/outpass_request.dart';
 
-class OutpassService {
+class OutpassService { 
   final CollectionReference<Map<String, dynamic>> _outpassRef =
       FirebaseFirestore.instance.collection('outpass_requests');
 
