@@ -5,7 +5,7 @@
 
 #include "resource.h"
 
-namespace {
+namespace { 
 
 /// Window attribute that enables dark mode window decorations.
 ///
