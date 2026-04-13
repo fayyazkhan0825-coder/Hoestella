@@ -4,7 +4,7 @@
 <dict>
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
-  <key>CFBundleExecutable</key>
+  <key>CFBundleExecutable</key> 
   <string>App</string>
   <key>CFBundleIdentifier</key>
   <string>io.flutter.flutter.app</string>
