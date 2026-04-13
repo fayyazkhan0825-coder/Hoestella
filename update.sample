@@ -5,7 +5,7 @@
 #
 # To enable this hook, rename this file to "update".
 #
-# Config
+# Config 
 # ------ 
 # hooks.allowunannotated
 #   This boolean sets whether unannotated tags will be allowed into the
