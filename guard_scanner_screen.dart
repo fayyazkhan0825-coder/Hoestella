@@ -8,7 +8,7 @@ import '../../models/outpass_request.dart';
 import '../../services/outpass_service.dart';
 
 class GuardScannerScreen extends StatefulWidget {
-  const GuardScannerScreen({super.key});
+  const GuardScannerScreen({super.key}); 
 
   @override
   State<GuardScannerScreen> createState() => _GuardScannerScreenState();
