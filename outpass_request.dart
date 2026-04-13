@@ -6,7 +6,7 @@ class OutpassRequest {
   final String id;
   final String studentId;
   final String studentName;
-  final String roomNumber;
+  final String roomNumber; 
   final String reason;
   final DateTime exitDateTime;
   final DateTime returnDateTime;
