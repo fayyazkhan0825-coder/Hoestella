@@ -4,7 +4,7 @@ class PhoneAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String? _verificationId;
-  int? _resendToken;
+  int? _resendToken; 
 
   /// Send OTP to phone number (format: +91XXXXXXXXXX)
   Future<void> sendOTP(String phoneNumber) async {
