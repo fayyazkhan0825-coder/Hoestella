@@ -6,7 +6,7 @@ class OutpassService {
   final CollectionReference<Map<String, dynamic>> _outpassRef =
       FirebaseFirestore.instance.collection('outpass_requests');
 
-  Future<void> createRequest(OutpassRequest request) async {
+  Future<void> createRequest(OutpassRequest request) async { 
     await _outpassRef.add(request.toMap());
   }
 
