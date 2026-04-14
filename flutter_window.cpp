@@ -10,7 +10,7 @@ FlutterWindow::FlutterWindow(const flutter::DartProject& project)
 FlutterWindow::~FlutterWindow() {}
 
 bool FlutterWindow::OnCreate() {
-  if (!Win32Window::OnCreate()) {
+  if (!Win32Window::OnCreate()) { 
     return false;
   }
 
