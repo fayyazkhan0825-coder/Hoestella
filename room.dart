@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 # An example hook script to validate a patch (and/or patch series) before
