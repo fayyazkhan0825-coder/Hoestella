@@ -1,3 +1,4 @@
+
 enum UserRole { student, admin, warden, guard }
 
 class AppUser {
