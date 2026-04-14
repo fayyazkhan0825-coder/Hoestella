@@ -6,7 +6,7 @@ class AppUser {
   final String email;
   final UserRole role;
   final String? roomNumber; 
-  final String? phone;
+  final String? phone; 
   final bool phoneVerified; 
   final bool isProfileLoaded;
 
