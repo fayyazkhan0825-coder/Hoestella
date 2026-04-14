@@ -7,7 +7,7 @@ import '../../models/outpass_request.dart';
 import '../../services/outpass_service.dart';
 import 'student_outpass_qr_screen.dart';  
 
-class StudentRequestsScreen extends StatelessWidget {
+class StudentRequestsScreen extends StatelessWidget { 
   const StudentRequestsScreen({super.key});
 
   @override
