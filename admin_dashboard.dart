@@ -6,7 +6,7 @@ import '../../services/auth_service.dart';
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key}); 
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
