@@ -5,7 +5,7 @@ import '../models/app_user.dart';
 
 class AuthService { 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance; 
+  final FirebaseFirestore _db = FirebaseFirestore.instance;  
 
   Stream<AppUser?> authStateWithProfile() async* {
     await for (final user in _auth.authStateChanges()) {
