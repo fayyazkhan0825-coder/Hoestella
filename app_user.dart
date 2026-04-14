@@ -7,7 +7,7 @@ class AppUser {
   final UserRole role;
   final String? roomNumber; 
   final String? phone;
-  final bool phoneVerified;
+  final bool phoneVerified; 
   final bool isProfileLoaded;
 
   AppUser({
