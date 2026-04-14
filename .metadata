@@ -12,7 +12,7 @@ project_type: app
 # Tracks metadata for the flutter migrate commandGF
 migration
   platforms:
-    - platform: root
+   - platform: root
       create_revision: 67323de285b00232883f53b84095eb72be97d35c
       base_revision: 67323de285b00232883f53b84095eb72be97d35c
     - platform: android
