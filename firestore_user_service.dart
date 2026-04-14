@@ -6,7 +6,7 @@ class FirestoreUserService {
   final CollectionReference<Map<String, dynamic>> _usersRef =
       FirebaseFirestore.instance.collection('users'); 
 
-  Future<void> upsertUser(AppUser user) async {
+  Future<void> upsertUser(AppUser user) async { 
     await _usersRef.doc(user.id).set(user.toMap(), SetOptions(merge: true));
   }
 
