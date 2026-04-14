@@ -7,7 +7,7 @@
 #
 # Config 
 # ------ 
-# hooks.allowunannotated
+# hooks.allowunannotated 
 #   This boolean sets whether unannotated tags will be allowed into the
 #   repository.  By default they won't be.
 # hooks.allowdeletetag
