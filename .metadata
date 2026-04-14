@@ -7,7 +7,7 @@ version:
   revision: "67323de285b00232883f53b84095eb72be97d35c"
   channel: "stable"
 
-project_type: app  
+project_type: app   
 
 # Tracks metadata for the flutter migrate commandGF
 migration
