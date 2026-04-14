@@ -6,7 +6,7 @@ A Smart Digital Outpass Management System designed to automate hostel exit–ent
 
 ## 📖 Project Overview 
 
-HOSTELLA is a university-based project developed to replace traditional paper-based hostel outpass systems with a secure, automated, and real-time digital solution.
+HOSTELLA is a university-based project developed to replace traditional paper-based hostel outpass systems with a secure, automated, and real-time digital solution. 
 
 The system allows:
 - Students to submit digital outpass requests
