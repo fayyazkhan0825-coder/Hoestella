@@ -4,5 +4,5 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
-</dict> 
+</dict>  
 </plist>
