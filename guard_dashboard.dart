@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/outpass_request.dart';
-import '../../services/outpass_service.dart';  
+import '../../services/outpass_service.dart';   
 
 class GuardScannerScreen extends StatefulWidget {
   const GuardScannerScreen({super.key});
