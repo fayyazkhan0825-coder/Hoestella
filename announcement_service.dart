@@ -6,7 +6,7 @@ class AnnouncementService {
   final CollectionReference<Map<String, dynamic>> _annRef =
       FirebaseFirestore.instance.collection('announcements');
 
-  Future<void> createAnnouncement(Announcement ann) async {
+  Future<void> createAnnouncement(Announcement ann) async { 
     await _annRef.add(ann.toMap());
   }
 
