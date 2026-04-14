@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum OutpassStatus { pending, approved, rejected }
 
-class OutpassRequest {
+class OutpassRequest { 
   final String id;
   final String studentId;
   final String studentName;
