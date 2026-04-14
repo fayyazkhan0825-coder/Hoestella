@@ -10,7 +10,7 @@ import 'src/services/firestore_user_service.dart';
 import 'src/services/outpass_service.dart';
 import 'src/services/announcement_service.dart';
 import 'src/screens/auth/login_screen.dart';
-import 'src/screens/common/splash_screen.dart';
+import 'src/screens/common/splash_screen.dart'; 
 import 'src/screens/dashboards/admin_dashboard.dart';
 import 'src/screens/dashboards/guard_dashboard.dart';
 import 'src/screens/dashboards/student_dashboard.dart';
