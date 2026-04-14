@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class PhoneAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? _verificationId;
+  String? _verificationId; 
   int? _resendToken; 
 
   /// Send OTP to phone number (format: +91XXXXXXXXXX)
